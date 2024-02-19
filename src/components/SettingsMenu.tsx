@@ -70,13 +70,13 @@ export default function SettingsMenu({settings, setSettings} : {settings: Settin
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+              <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-background dark:bg-darkBackground py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
                 {fonts.map((person, personIdx) => (
                   <Listbox.Option
                     key={personIdx}
                     className={({ active }) =>
                       `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                        active ? 'dark:bg-darkBackground dark:text-green-500' : 'text-gray-900'
+                        active ? 'text-amber-600' : 'text-text dark:text-darkText'
                       }`
                     }
                     value={person}
