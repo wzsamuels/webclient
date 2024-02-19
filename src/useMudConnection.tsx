@@ -70,7 +70,7 @@ const useMudConnection = (): UseMudConnectionReturn => {
   };
   
   useEffect(() => {
-    ws.current = new WebSocket(`ws://${import.meta.env.VITE_WEBSOCKET}/`);
+    ws.current = new WebSocket(`wss://${import.meta.env.VITE_WEBSOCKET}/`);
 
     ws.current.onopen = () => {
       console.log('Connected to WebSocket proxy');
