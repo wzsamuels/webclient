@@ -74,7 +74,7 @@ const useMudConnection = (): UseMudConnectionReturn => {
   };
   
   const connect = () => {
-    ws.current = new WebSocket(`wss://${import.meta.env.VITE_WEBSOCKET}/`);
+    ws.current = new WebSocket(`wss://websocket.zach-samuels.com:8080/`);
 
     ws.current.onopen = () => {
       console.log('Connected to WebSocket proxy');
@@ -106,7 +106,7 @@ const useMudConnection = (): UseMudConnectionReturn => {
       if (!event.wasClean && reconnectAttempts.current < 5) { // Limit reconnect attempts to avoid infinite loops
         setTimeout(() => {
           console.log('Attempting to reconnect...');
-          connect(); // Attempt to reconnect
+          if(reconnectAttempts.current !== 0) connect(); // Attempt to reconnect
           reconnectAttempts.current++;
         }, RECONNECT_INTERVAL);
       }
