@@ -44,6 +44,9 @@ if(localStorage.getItem("theme") === 'dark') {
   
 }
 
+// Define constants for reconnection
+const RECONNECT_INTERVAL = 3000; // Reconnect attempt interval in milliseconds
+
 let channelColorAssignments: { [channel: string]: string } = {};
 let colorUsage: string[] = [];
 
@@ -59,6 +62,7 @@ const useMudConnection = (): UseMudConnectionReturn => {
   const ws = useRef<WebSocket | null>(null);
   const [lines, setLines] = useState<Line[]>([]);
   const [connected, setConnected] = useState(false);
+  const reconnectAttempts = useRef(0);
 
   const assignColorToChannel = (channel: string): string => {
     if (!channelColorAssignments[channel]) {
@@ -69,12 +73,13 @@ const useMudConnection = (): UseMudConnectionReturn => {
     return channelColorAssignments[channel];
   };
   
-  useEffect(() => {
+  const connect = () => {
     ws.current = new WebSocket(`wss://${import.meta.env.VITE_WEBSOCKET}/`);
 
     ws.current.onopen = () => {
       console.log('Connected to WebSocket proxy');
       setConnected(true);
+      reconnectAttempts.current = 0; // Reset reconnect attempts on successful connection
     };
 
     ws.current.onmessage = (event: MessageEvent) => {
@@ -94,9 +99,17 @@ const useMudConnection = (): UseMudConnectionReturn => {
       setLines(state => [...state, ...newLines]);
     };
 
-    ws.current.onclose = () => {
+    ws.current.onclose = (event) => {
       console.log('Disconnected from WebSocket proxy');
       setConnected(false);
+      // Attempt to reconnect with a delay
+      if (!event.wasClean && reconnectAttempts.current < 5) { // Limit reconnect attempts to avoid infinite loops
+        setTimeout(() => {
+          console.log('Attempting to reconnect...');
+          connect(); // Attempt to reconnect
+          reconnectAttempts.current++;
+        }, RECONNECT_INTERVAL);
+      }
     };
 
     ws.current.onerror = (error) => {
@@ -106,7 +119,15 @@ const useMudConnection = (): UseMudConnectionReturn => {
     return () => {
       ws.current?.close();
     };
-  }, []);
+  }
+  
+  useEffect(() => {
+    connect(); // Call connect function to establish connection
+
+    return () => {
+      ws.current?.close();
+    };
+  }, []); // Empty dependency array to run only once on mount
 
   const sendMessage = (message: string) => {
     if (ws.current?.readyState === WebSocket.OPEN) {
