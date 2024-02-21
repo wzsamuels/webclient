@@ -30,7 +30,7 @@ const TextWithLinks: React.FC<{ line: Line, settings: Settings }> = ({ line, set
   return (
     <div className='my-1'>
       { settings.colorChannels ?
-        line.channelName ? (
+        (line.channelName && line.color) ? (
           <>
             <span style={{color: line.color}} dangerouslySetInnerHTML={{ __html: line.channelName }} />
             <span dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
@@ -60,11 +60,23 @@ function Output({ lines, settings } : {lines: Line[], settings: Settings}) {
     if (container) {
       // Directly set scrollTop to scrollHeight to scroll to the bottom
       container.scrollTop = container.scrollHeight;
+    
     }
   };
 
+  const isScrolledToBottom = () => {
+    if (!containerRef.current) return false;
+  
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+    // Introduce a small threshold (e.g., 5 pixels) to account for rounding errors
+    const threshold = 35;
+    console.log(`scrollTop: ${scrollTop}, scrollHeight: ${scrollHeight}, clientHeight: ${clientHeight}`)
+    console.log(scrollHeight - scrollTop - clientHeight)
+    return (scrollHeight - scrollTop - clientHeight) < threshold;
+  };
+
   useEffect(() => {
-    scrollToBottom();
+    if(isScrolledToBottom()) scrollToBottom();
   }, [lines]);
 
   return (

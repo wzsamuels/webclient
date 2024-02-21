@@ -28,5 +28,5 @@ declare global {
 export interface Line {
   text: string; // The rest of the text
   channelName?: string; // Optional channel name if present
-  color: string; // Color is now just for the channel name
+  color?: string; // Color is now just for the channel name
 }
