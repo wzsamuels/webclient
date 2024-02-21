@@ -106,7 +106,8 @@ const useMudConnection = (): UseMudConnectionReturn => {
       if (!event.wasClean && reconnectAttempts.current < 5) { // Limit reconnect attempts to avoid infinite loops
         setTimeout(() => {
           console.log('Attempting to reconnect...');
-          if(reconnectAttempts.current !== 0) connect(); // Attempt to reconnect
+          // Don't reconnect the first time due to a bug (react rerendering?)
+          if(reconnectAttempts.current !== 0) connect();
           reconnectAttempts.current++;
         }, RECONNECT_INTERVAL);
       }
@@ -127,7 +128,7 @@ const useMudConnection = (): UseMudConnectionReturn => {
     return () => {
       ws.current?.close();
     };
-  }, []); // Empty dependency array to run only once on mount
+  }, []);
 
   const sendMessage = (message: string) => {
     if (ws.current?.readyState === WebSocket.OPEN) {
