@@ -36,9 +36,9 @@ export default function SettingsMenu({settings, setSettings} : {settings: Settin
   return (
     <Menu>
       <Menu.Button className="hover:underline">Settings</Menu.Button>
-      <Menu.Items className="border border-text dark:border-darkText fixed bg-background dark:bg-darkBackground shadow-xl	flex flex-col min-w-65">
+      <Menu.Items className="border border-text dark:border-darkText fixed bg-background dark:bg-darkBackground shadow-xl	flex flex-col w-80 max-w-full">
         <div className="p-3 grid gap-3">
-          <div className="grid grid-cols-2">
+          <div className="flex grid-cols-2 justify-between">
             <div>Theme:</div>
             <div>
             <label className="mx-2">Light</label>
@@ -47,15 +47,15 @@ export default function SettingsMenu({settings, setSettings} : {settings: Settin
             <input type="radio" value="dark" name="theme" checked={theme === "dark"} onChange={handleThemeChange}/>            
             </div>
           </div>
-          <div className="grid grid-cols-2">
+          <div className="flex justify-between grid-cols-2">
             <div>Color Channels:</div>            
             <input className="h-[90%]" type="checkbox" checked={colorChannels} onChange={handleColorChannelsChange}/>
           </div>
           <Listbox value={font} onChange={setFont}>
-          <div className="relative mt-1 flex">
-            Font:
+          <div className="relative mt-1 flex justify-between">
+            <span className='mr-2'>Font:</span>
             <Listbox.Button
-              className="relative w-full cursor-default rounded-lg bg-background dark:bg-darkBackground pl-3  text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+              className="relative w-full cursor-default rounded-lg bg-background dark:bg-darkBackground pl-3  text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 ">
               <span className="block truncate">{font}</span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon
@@ -108,7 +108,9 @@ export default function SettingsMenu({settings, setSettings} : {settings: Settin
 
         
         <Menu.Item>
-          <button className="border-t hover:bg-darkBackground hover:text-darkText" onClick={() => handleApply()}>Apply</button>
+          <div className="my-4 flex justify-center">
+            <button className="px-4 py-1 border border-text rounded hover:bg-darkBackground hover:text-darkText dark:hover:bg-background hover:dark:text-text" onClick={() => handleApply()}>Apply</button>            
+          </div>
         </Menu.Item>
       </Menu.Items>
     </Menu>

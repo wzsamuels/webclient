@@ -38,7 +38,7 @@ export default function Home() {
             <span><SettingsMenu settings={settings} setSettings={setSettings}/></span> | <span><HelpMenu/></span>
           </div>
           <div>
-            { connected ? <span className="text-green-500">Connected</span> : <span className="text-red-500">Disconnected</span>}
+            { connected ? <span className="dark:text-green-500 text-green-700">Connected</span> : <span className="text-red-500">Disconnected</span>}
           </div>
         </header>
         <Output settings={settings} lines={lines}/>
