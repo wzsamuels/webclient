@@ -1,5 +1,5 @@
 import DOMPurify from "dompurify";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Line, Settings } from "../types";
 
 const escapeAngleBrackets = (text: string): string => {
@@ -54,30 +54,29 @@ const TextWithLinks: React.FC<{ line: Line, settings: Settings }> = ({ line, set
 
 function Output({ lines, settings } : {lines: Line[], settings: Settings}) {
   const containerRef = useRef<HTMLDivElement>(null); // Reference to the scrollable container
+  const [hasScrolledToBottomOnce, setHasScrolledToBottomOnce] = useState(false);
 
   const scrollToBottom = () => {
     const container = containerRef.current;
     if (container) {
       // Directly set scrollTop to scrollHeight to scroll to the bottom
       container.scrollTop = container.scrollHeight;
-    
     }
   };
 
   const isScrolledToBottom = () => {
     if (!containerRef.current) return false;
-  
-    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-    // Introduce a small threshold (e.g., 5 pixels) to account for rounding errors
-    const threshold = 35;
-    console.log(`scrollTop: ${scrollTop}, scrollHeight: ${scrollHeight}, clientHeight: ${clientHeight}`)
-    console.log(scrollHeight - scrollTop - clientHeight)
-    return (scrollHeight - scrollTop - clientHeight) < threshold;
+
+    const { scrollTop, clientHeight, scrollHeight } = containerRef.current;
+    // You might need a small threshold for cases where it's almost at the bottom but not exactly due to fractional heights
+    console.log(scrollTop + clientHeight, scrollHeight)
+    return (scrollTop + clientHeight) >= scrollHeight - 45;
   };
 
-  useEffect(() => {
-    if(isScrolledToBottom()) scrollToBottom();
-  }, [lines]);
+  useLayoutEffect(() => {
+   // if(isScrolledToBottom()) scrollToBottom();
+   scrollToBottom();
+  }, [lines]); // Depend on 'lines' to run this effect when lines change
 
   return (
     <div ref={containerRef} className='grow overflow-y-auto'>
