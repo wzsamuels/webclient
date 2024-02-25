@@ -41,7 +41,6 @@ if(localStorage.getItem("theme") === 'dark') {
     '#85929E', // Greyish blue
     '#F1948A', // Soft pink
   ];
-  
 }
 
 // Define constants for reconnection
@@ -74,7 +73,7 @@ const useMudConnection = (): UseMudConnectionReturn => {
   };
   
   const connect = () => {
-    ws.current = new WebSocket(`wss://websocket.zach-samuels.com:8080/`);
+    ws.current = new WebSocket(`wss://${import.meta.env.VITE_WEBSOCKET}`);
 
     ws.current.onopen = () => {
       console.log('Connected to WebSocket proxy');
@@ -84,7 +83,6 @@ const useMudConnection = (): UseMudConnectionReturn => {
 
     ws.current.onmessage = (event: MessageEvent) => {
       const data: string = event.data;
-      console.log('Message from MUD:', event.data);
       const newLines = data.split(/(?<=\n)/).map((line): Line => {
         const channelMatch = line.match(/^\[([\w.-]+)\]/);
         let channelName: string | undefined = undefined;
