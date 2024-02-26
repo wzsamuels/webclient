@@ -1,1 +1,1 @@
-# webclient
+This is a simple web based mud client for ifMUD.
