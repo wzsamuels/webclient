@@ -9,7 +9,7 @@ import SettingsMenu from "./components/SettingsMenu";
 import { Settings } from "./types";
 
 export default function Home() {
-  const {sendMessage, lines, connected} = useMudConnection();
+  const {sendMessage, lines, connected, reconnect} = useMudConnection();
   const [settings, setSettings] = useState<Settings>(() => {
     const theme = localStorage.getItem("theme") ?? "dark";
     const color = localStorage.getItem("color") ? Boolean(localStorage.getItem("color")) : true;
@@ -38,6 +38,12 @@ export default function Home() {
             <span><SettingsMenu settings={settings} setSettings={setSettings}/></span> | <span><HelpMenu/></span>
           </div>
           <div>
+            { !connected && 
+              <>
+                <span onClick={reconnect} className="underline dark:text-yellow-500 text-yellow-500 cursor-pointer">Reconnect</span>
+                <span> | </span>
+              </>
+            }
             { connected ? <span className="dark:text-green-500 text-green-700">Connected</span> : <span className="text-red-500">Disconnected</span>}
           </div>
         </header>

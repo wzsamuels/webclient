@@ -54,6 +54,7 @@ interface UseMudConnectionReturn {
   sendMessage: (message: string) => void;
   lines: Line[];
   connected: boolean;
+  reconnect: () => void;
 }
 
 
@@ -137,7 +138,13 @@ const useMudConnection = (): UseMudConnectionReturn => {
     }
   };
 
-  return { sendMessage, lines, connected };
+  const reconnect = () => {
+    if(!connected) {
+      connect();
+    }
+  }
+
+  return { sendMessage, lines, connected, reconnect };
 };
 
 export default useMudConnection
