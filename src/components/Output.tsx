@@ -1,11 +1,9 @@
 import DOMPurify from "dompurify";
-import React, { useLayoutEffect, useRef} from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { Line, Settings } from "../types";
 
 const escapeAngleBrackets = (text: string): string => {
-  return text
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 };
 
 const convertUrlsToLinks = (text: string): string => {
@@ -14,59 +12,72 @@ const convertUrlsToLinks = (text: string): string => {
 };
 
 const TextWithLinks: React.FC<{ line: Line, settings: Settings }> = ({ line, settings }) => {
-
-  // First, escape angle brackets in the original text
   const escapedText = escapeAngleBrackets(line.text);
-  
-  // Then, convert URLs to clickable links in the escaped text
   const htmlContentWithLinks = convertUrlsToLinks(escapedText);
-
-  // Sanitize the final HTML content to ensure safety
   const sanitizedHtml = DOMPurify.sanitize(htmlContentWithLinks, {
-    ADD_ATTR: ['target', 'rel', 'className', 'class'], // Adding 'class' to the list of allowed attributes
+    ADD_ATTR: ['target', 'rel', 'className', 'class'],
     ADD_TAGS: ['a']
   });
 
   return (
     <div className='my-1'>
-      { settings.colorChannels ?
+      {settings.colorChannels ?
         (line.channelName && line.color) ? (
           <>
             <span style={{color: line.color}} dangerouslySetInnerHTML={{ __html: line.channelName }} />
             <span dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
           </>
         ) : (
-          <span style={{ whiteSpace: "pre-wrap", }} dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+          <span style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
         )
-      :
-      line.channelName ? (
-        <>
-          <span dangerouslySetInnerHTML={{ __html: line.channelName }} />
-          <span dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
-        </>
-      ) : (
-        <span style={{ whiteSpace: "pre-wrap", }} dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
-      )
+        :
+        line.channelName ? (
+          <>
+            <span dangerouslySetInnerHTML={{ __html: line.channelName }} />
+            <span dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+          </>
+        ) : (
+          <span style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+        )
       }      
     </div>
   );
 };
 
-function Output({ lines, settings } : {lines: Line[], settings: Settings}) {
-  const containerRef = useRef<HTMLDivElement>(null); // Reference to the scrollable container
+function Output({ lines, settings } : { lines: Line[], settings: Settings }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isAtBottomRef = useRef(true);
+
+  const handleScroll = useCallback(() => {
+    const container = containerRef.current;
+    if (container) {
+      const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 1;
+      isAtBottomRef.current = isAtBottom;
+    }
+  }, []);
 
   const scrollToBottom = () => {
     const container = containerRef.current;
     if (container) {
-      // Directly set scrollTop to scrollHeight to scroll to the bottom
       container.scrollTop = container.scrollHeight;
     }
   };
 
-  useLayoutEffect(() => {
-   // if(isScrolledToBottom()) scrollToBottom();
-   scrollToBottom();
-  }, [lines]); // Depend on 'lines' to run this effect when lines change
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => {
+        container.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [handleScroll]);
+
+  useEffect(() => {
+    if (isAtBottomRef.current) {
+      scrollToBottom();
+    }
+  }, [lines]);
 
   return (
     <div ref={containerRef} className='grow overflow-y-auto'>
@@ -77,4 +88,4 @@ function Output({ lines, settings } : {lines: Line[], settings: Settings}) {
   );
 }
 
-export default Output
+export default Output;

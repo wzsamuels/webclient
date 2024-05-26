@@ -112,7 +112,7 @@ const useMudConnection = (): UseMudConnectionReturn => {
     };
 
     ws.current.onerror = (error) => {
-      console.error(`Error: ${error}`)
+      console.error(error)
     }
 
     return () => {
